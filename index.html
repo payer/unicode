@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Payer Ahammed</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<style type="text/css">
+	#encode span{
+	display: inline-block;
+	border: 1px solid black;
+	padding: 2px 10px;
+	margin-right: 2px;
+	color: red;
+	}
+	</style>
+  </head>
+  <body>
+  <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="javascript:;">Unicode</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="javascript:;">Details</a></li>
+            
+          </ul>
+          
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+	
+  <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div >
+        <p>Input: </p>
+        <textarea class="form-control" onkeyup="setResult();" id="input"></textarea><br />
+      </div>
+	  <div class="jumbotron">
+	  Output(Unicode):<hr style="border: 1px solid #DADADA;" />
+	  <div class="row">
+	  
+	  
+	  <div class="col-md-3">
+	   <p>Decimal</p>
+        <textarea class="form-control" disabled id="decimal"></textarea>
+	  </div>
+	  
+	   <div class="col-md-3">
+	   <p>Binary</p>
+        <textarea class="form-control" disabled id="binary"></textarea>
+	  </div>
+	  
+	   <div class="col-md-3">
+	   <p>Hexadecimal</p>
+        <textarea class="form-control" disabled id="hexa"></textarea>
+	  </div>
+	  
+      </div>
+	  UTF-8(encoding):
+	  <hr />
+	  <div id="encode">
+	  </div>
+	  
+ 
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	function setResult(){
+	var text = $("#input").val();
+	if(text.length>1){
+	text = text.slice(1);
+	$("#input").val(text);
+	
+	}
+	if(text){
+	$("#decimal").val(text.charCodeAt(0));
+	}else{
+	$("#decimal").val('');
+	}
+	setBinary();
+	setHexa();
+	}
+	
+	function setBinary(){
+	var text = $("#decimal").val();
+	if(text){
+		var binary = parseInt(text, 10).toString(2);
+		$("#binary").val(binary);
+		
+	}else{
+	$("#binary").val('');
+	}
+		utf8Encode(binary);
+	}
+	function setHexa(){
+	var text = $("#decimal").val();
+	if(text){
+	var hexa = parseInt(text, 10).toString(16);
+		$("#hexa").val(hexa);
+	
+	}else{
+	$("#hexa").val('');
+	}
+		
+	
+	}
+	
+	
+	function utf8Encode(text){
+	if(text){
+	var counter = text.length;
+	var temptext = text;
+	}
+	
+	$("#encode").empty();
+	
+	if(counter<=7){
+		$("#encode").append('<span>0</span>');
+		for(i=0;i<temptext.length;i++){
+			$("#encode").append('<span>'+temptext.charAt(i)+'</span>');
+		}
+	}else if(counter<=11){
+		var remaining = 11/counter;
+		console.log(remaining);
+		$("#encode").append('<span>10</span>');
+		for(i=0;i<temptext.length;i++){
+			$("#encode").append('<span>'+temptext.charAt(i)+'</span>');
+		}
+	
+	}else if(counter<=16){
+	console.log('three');
+	}else if(counter<=21){
+	console.log('four');
+	}else if(counter<=26){
+	console.log('five');
+	}else if(counter<=31){
+	console.log('six');
+	}else{
+	console.log('unknown');
+	}
+	
+	
+	}
+	
+	
+	</script>
+  </body>
+</html>
