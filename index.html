@@ -34,16 +34,13 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="javascript:;">Details</a></li>
-            
+              <li class="active"><a href="javascript:;">Details</a></li>
           </ul>
-          
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 	
   <div class="container">
-
       <!-- Main component for a primary marketing message or call to action -->
       <div >
         <p>Input: </p>
@@ -52,8 +49,7 @@
 	  <div class="jumbotron">
 	  Output(Unicode):<hr style="border: 1px solid #DADADA;" />
 	  <div class="row">
-	  
-	  
+
 	  <div class="col-md-3">
 	   <p>Decimal</p>
         <textarea class="form-control" disabled id="decimal"></textarea>
@@ -74,8 +70,7 @@
 	  <hr />
 	  <div id="encode">
 	  </div>
-	  
- 
+
       </div>
 
     </div> <!-- /container -->
@@ -85,83 +80,139 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 	<script type="text/javascript">
+
+
 	function setResult(){
-	var text = $("#input").val();
-	if(text.length>1){
-	text = text.slice(1);
-	$("#input").val(text);
-	
-	}
-	if(text){
-	$("#decimal").val(text.charCodeAt(0));
-	}else{
-	$("#decimal").val('');
-	}
-	setBinary();
-	setHexa();
+    var text = $("#input").val();
+        if(text.length>1){
+        text = text.slice(1);
+        $("#input").val(text);
+        }
+
+        if(text){
+        $("#decimal").val(text.charCodeAt(0));
+        }else{
+        $("#decimal").val('');
+        }
+
+    setBinary();
+    setHexa();
 	}
 	
 	function setBinary(){
 	var text = $("#decimal").val();
-	if(text){
-		var binary = parseInt(text, 10).toString(2);
-		$("#binary").val(binary);
-		
-	}else{
-	$("#binary").val('');
+        if(text){
+            var binary = parseInt(text, 10).toString(2);
+            $("#binary").val(binary);
+            var finalText = utf8Encode(binary);
+            draw(finalText);
+        }else{
+        $("#binary").val('');
+        }
 	}
-		utf8Encode(binary);
-	}
+
 	function setHexa(){
 	var text = $("#decimal").val();
-	if(text){
-	var hexa = parseInt(text, 10).toString(16);
-		$("#hexa").val(hexa);
-	
-	}else{
-	$("#hexa").val('');
+        if(text){
+        var hexa = parseInt(text, 10).toString(16);
+            $("#hexa").val(hexa);
+        }else{
+        $("#hexa").val('');
+        }
 	}
-		
-	
-	}
-	
-	
+
 	function utf8Encode(text){
-	if(text){
-	var counter = text.length;
-	var temptext = text;
+        if(text){
+            var counter = text.length;
+            var unicode = '';
+            var numberOfZero = 0;
+            if(counter<=7){
+                unicode +=0;
+                numberOfZero = 7-counter;
+                if(numberOfZero){
+                    var info = getUnicode(numberOfZero,text,1);
+                    unicode +=info;
+                }else{
+                    unicode +=text;
+                }
+                return unicode;
+            }else if(counter<=11){
+                unicode +=110;
+                numberOfZero = 11-counter;
+                var info = getUnicode(numberOfZero,text,2);
+                unicode +=info;
+                return unicode;
+            }else if(counter<=16){
+                unicode +=1110;
+                numberOfZero = 16-counter;
+                var info = getUnicode(numberOfZero,text,3);
+                unicode +=info;
+                return unicode;
+            }else if(counter<=21){
+                unicode +=11110;
+                numberOfZero = 21-counter;
+                var info = getUnicode(numberOfZero,text,4);
+                unicode +=info;
+                return unicode;
+            }else if(counter<=26){
+                unicode +=111110;
+                numberOfZero = 26-counter;
+                var info = getUnicode(numberOfZero,text,5);
+                unicode +=info;
+                return unicode;
+            }else if(counter<=31){
+                unicode +=1111110;
+                numberOfZero = 31-counter;
+                var info = getUnicode(numberOfZero,text,6);
+                unicode +=info;
+                return unicode;
+            }
+        }
 	}
-	
-	$("#encode").empty();
-	
-	if(counter<=7){
-		$("#encode").append('<span>0</span>');
-		for(i=0;i<temptext.length;i++){
-			$("#encode").append('<span>'+temptext.charAt(i)+'</span>');
-		}
-	}else if(counter<=11){
-		var remaining = 11/counter;
-		console.log(remaining);
-		$("#encode").append('<span>10</span>');
-		for(i=0;i<temptext.length;i++){
-			$("#encode").append('<span>'+temptext.charAt(i)+'</span>');
-		}
-	
-	}else if(counter<=16){
-	console.log('three');
-	}else if(counter<=21){
-	console.log('four');
-	}else if(counter<=26){
-	console.log('five');
-	}else if(counter<=31){
-	console.log('six');
-	}else{
-	console.log('unknown');
-	}
-	
-	
-	}
-	
+
+
+    function leadingZero(text,numberOfZero){
+        var addZero = '';
+        for(k=1;k<=(numberOfZero);k++){
+            addZero +=0;
+        }
+        addZero +=text;
+        return addZero;
+    }
+
+
+    function getUnicode(numberOfZero,text,byte){
+        if(byte ===1){
+            return leadingZero(text,numberOfZero);
+        }
+        var newtext = '';
+        var totalByte = byte;
+        do{
+            if(byte ==1){
+                numberOfZero = ((7-totalByte)-text.length);
+                var info =  leadingZero(text,numberOfZero);
+                return info +=newtext;
+
+            }
+            var remaining = text.substr(0,text.length-6);
+            var cut = text.substr(-6);
+            newtext +=10;
+            newtext +=cut;
+            text = remaining;
+        }while(byte--);
+    }
+
+    function draw(text){
+        $("#encode").empty();
+        for(i=0;i<text.length;i++){
+            if(i%24==0){
+                $("#encode").append('<hr />');
+            }else if(i%8==0){
+                $("#encode").append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+            }
+            $("#encode").append('<span>'+text.charAt(i)+'</span>');
+        }
+    }
 	
 	</script>
   </body>
